@@ -33,9 +33,8 @@ VSCode 는 `firmware/stm32h5-yss/prj/stm32h5-yss.code-workspace` 를 연다. 디
 
 ### 다음 작업
 
-1. **yss 포크 push** — `cmake-h5` 와 `archive/*` 브랜치는 아직 로컬에만 있다 ([04](04-yss-structure.md) 4절)
-2. **23 스레드 스택 한계** — PendSV 에서 PSPLIM 을 스레드마다 바꿔 스택 넘침을 하드웨어로 잡는다
-3. **24 EXTI · 버튼(S5, PC0)** — 지금은 `YSS_DRV_EXTI_UNSUPPORTED`
+1. **23 스레드 스택 한계** — PendSV 에서 PSPLIM 을 스레드마다 바꿔 스택 넘침을 하드웨어로 잡는다
+2. **24 EXTI · 버튼(S5, PC0)** — 지금은 `YSS_DRV_EXTI_UNSUPPORTED`
 
 ### 미해결 과제
 
