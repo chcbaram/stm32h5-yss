@@ -1,0 +1,3 @@
+[submodule "firmware/stm32h5-yss/lib/yss"]
+	path = firmware/stm32h5-yss/lib/yss
+	url = https://github.com/chcbaram/yss

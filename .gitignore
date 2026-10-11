@@ -1,0 +1,12 @@
+# 빌드 산출물
+build/
+
+# 재배포가 불가하거나 큰 원문 자료 (각자 내려받아 둔다)
+hardware/ref/
+
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
