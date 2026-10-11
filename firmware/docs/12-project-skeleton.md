@@ -127,11 +127,26 @@ SEGGER 가 해 주던 것은 yss 소스를 고치지 않고 CMake 정의로 맞�
 
 | 디버그 구성 | 동작 |
 |---|---|
-| **Debug (probe-rs)** | `build-build` → 기록(검증) → 리셋 후 멈춤. 브레이크포인트를 걸고 F5 |
+| **Debug (main 에서 멈춤)** | cortex-debug + `probe-rs gdb`. 빌드 → gdb 서버 → `load` → 리셋 → **main 에서 멈춤**. 끝나면 서버를 끈다 |
+| **Debug (probe-rs, 리셋에서 멈춤)** | probe-rs 확장. 빌드 → 기록(검증) → 리셋 벡터에서 멈춤 |
 | **Attach (probe-rs)** | 기록하지 않고 돌고 있는 코어에 붙는다 |
+
+### main 에서 멈추기
+
+probe-rs 확장(0.32)에는 `runToEntryPoint` 같은 옵션이 없다(확장의 설정 스키마로 확인). `haltAfterReset` 은 리셋 벡터에서 멈출 뿐이다. 그래서 **cortex-debug 확장의 `runToEntryPoint: "main"`** 을 쓰고, gdb 서버는 probe-rs 가 맡는다(`servertype: external`).
+
+| 태스크 | 하는 일 |
+|---|---|
+| `gdb-server` | `probe-rs gdb --chip STM32H563VITx` 를 백그라운드로 띄운다. "Firing up GDB stub" 줄이 나오면 준비된 것으로 본다 |
+| `debug-prepare` | `build-build` → `gdb-server` 순서 (런처의 `preLaunchTask`) |
+| `gdb-server-stop` | `workbench.action.tasks.terminate` 로 `gdb-server` 를 끈다 (런처의 `postDebugTask`) |
+
+`probe-rs gdb` 서버는 gdb 가 detach / kill 해도 끝나지 않는다(CLI 로 확인). 남아 있으면 프로브를 잡고 있어 `flash` 태스크와 probe-rs 런처가 실패하므로 디버그가 끝날 때 끈다.
+
+같은 순서(`monitor reset halt` → `load` → `monitor reset halt` → main 까지 실행)를 CLI 의 `arm-none-eabi-gdb` 로 돌려 main 에서 멈추는 것을 확인했다.
 
 SVD 는 `tools/svd/STM32H563.svd` (주변장치 레지스터 뷰). IntelliSense 는 `build/compile_commands.json` 을 쓴다.
 
 ## 확인 필요
 
-- VSCode 디버그 구성은 파일만 만들었다. 이 세션에서 F5 로 실제 실행해 보지는 않았다(같은 구성을 참조 프로젝트에서 쓰고 있다).
+- VSCode 디버그 구성은 파일만 만들었다. 같은 gdb 명령 순서는 CLI 로 확인했지만, VSCode 에서 F5 로 실행해 보지는 않았다.

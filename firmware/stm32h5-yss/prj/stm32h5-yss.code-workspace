@@ -92,6 +92,63 @@
         "options": {
           "cwd": "${workspaceFolder}"
         }
+      },
+      {
+        "label": "gdb-server",
+        "detail": "probe-rs gdb 서버 (cortex-debug 런처용). 디버그가 끝나면 gdb-server-stop 이 끈다.",
+        "type": "process",
+        "command": "probe-rs",
+        "args": [
+          "gdb",
+          "--chip",
+          "STM32H563VITx",
+          "--gdb-connection-string",
+          "127.0.0.1:1337"
+        ],
+        "isBackground": true,
+        "problemMatcher": {
+          "owner": "probe-rs",
+          "pattern": {
+            "regexp": "^__never_matches__$"
+          },
+          "background": {
+            "activeBegin": true,
+            "beginsPattern": ".",
+            "endsPattern": "Firing up GDB stub"
+          }
+        },
+        "options": {
+          "cwd": "${workspaceFolder}"
+        }
+      },
+      {
+        "label": "debug-prepare",
+        "dependsOrder": "sequence",
+        "dependsOn": [
+          "build-build",
+          "gdb-server"
+        ],
+        "problemMatcher": []
+      },
+      {
+        "label": "gdb-server-stop",
+        "detail": "gdb-server 태스크를 끈다. 서버가 남으면 프로브를 잡고 있어 flash 가 실패한다.",
+        "type": "process",
+        "command": "cmake",
+        "args": [
+          "-E",
+          "echo",
+          "${input:terminateGdbServer}"
+        ],
+        "problemMatcher": []
+      }
+    ],
+    "inputs": [
+      {
+        "id": "terminateGdbServer",
+        "type": "command",
+        "command": "workbench.action.tasks.terminate",
+        "args": "gdb-server"
       }
     ]
   },
@@ -99,7 +156,30 @@
     "version": "0.2.0",
     "configurations": [
       {
-        "name": "Debug (probe-rs)",
+        "name": "Debug (main 에서 멈춤)",
+        "type": "cortex-debug",
+        "request": "launch",
+        "cwd": "${workspaceFolder}",
+        "executable": "${workspaceFolder}/build/stm32h5-yss.elf",
+        "servertype": "external",
+        "gdbTarget": "127.0.0.1:1337",
+        "gdbPath": "arm-none-eabi-gdb",
+        "preLaunchTask": "debug-prepare",
+        "postDebugTask": "gdb-server-stop",
+        "overrideLaunchCommands": [
+          "monitor reset halt",
+          "load",
+          "monitor reset halt"
+        ],
+        "overrideRestartCommands": [
+          "monitor reset halt"
+        ],
+        "runToEntryPoint": "main",
+        "svdFile": "${workspaceFolder}/tools/svd/STM32H563.svd",
+        "showDevDebugOutput": "none"
+      },
+      {
+        "name": "Debug (probe-rs, 리셋에서 멈춤)",
         "type": "probe-rs-debug",
         "request": "launch",
         "cwd": "${workspaceFolder}",

@@ -24,7 +24,7 @@
 |---|---|---|
 | 설치 | `brew install probe-rs-tools` | STM32CubeCLT (수 GB, ST 로그인) |
 | H563 지원 | 내장 (`STM32H563VITx`) | 내장 |
-| VSCode | probe-rs 확장 (`probe-rs-debug`) | cortex-debug + gdbserver 경로 지정 |
+| VSCode | probe-rs 확장, 또는 cortex-debug + `probe-rs gdb` (main 에서 멈춤) | cortex-debug + gdbserver 경로 지정 |
 | 같은 명령으로 Win / Linux / macOS | 예 | 경로가 OS 마다 다름 |
 
 참조 프로젝트(FRDM-IMXRT1186)와 같은 선택이다. 이 PC 에는 STM32CubeCLT 1.22 도 있지만 쓰지 않는다.
